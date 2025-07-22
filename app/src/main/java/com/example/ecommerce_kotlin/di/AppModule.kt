@@ -1,20 +1,15 @@
 package com.example.ecommerce_kotlin.di
 
-import android.content.Context
-import com.example.ecommerce_kotlin.data.datastore.UserPreferences
-import com.example.ecommerce_kotlin.data.remote.ApiService
-import com.example.ecommerce_kotlin.data.remote.RetrofitInstance
-import com.example.ecommerce_kotlin.data.repository.AuthRepositoryImpl
-import com.example.ecommerce_kotlin.domain.repository.AuthRepository
-import com.example.ecommerce_kotlin.domain.repository.ProductRepository
-import com.example.ecommerce_kotlin.data.repository.ProductRepositoryImpl
-
+import android.app.Application
+import androidx.room.Room
+import com.example.ecommerce_kotlin.data.local.CartDatabase
+import com.example.ecommerce_kotlin.data.local.dao.CartDao
+import com.example.ecommerce_kotlin.data.repository.CartRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -22,21 +17,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideApiService(): ApiService = RetrofitInstance.api
-
-    @Provides
-    @Singleton
-    fun provideAuthRepository(apiService: ApiService): AuthRepository =
-        AuthRepositoryImpl(apiService)
-
-    @Provides
-    @Singleton
-    fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
-        return UserPreferences(context)
+    fun provideCartRepository(cartDao: CartDao): CartRepository {
+        return CartRepository(cartDao)
     }
 
-    @Provides
-    @Singleton
-    fun provideProductRepository(apiService: ApiService): ProductRepository =
-        ProductRepositoryImpl(apiService)
+
 }
+

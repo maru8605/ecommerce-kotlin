@@ -150,6 +150,11 @@ fun ProductCard(product: Product, cartViewModel: CartViewModel) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                Text(
+                    text = "ID: ${product.id}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
 
                 Text(
                     text = "$${product.price}",
