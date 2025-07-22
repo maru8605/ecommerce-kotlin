@@ -66,6 +66,20 @@ fun LoginScreen(
             Text(if (uiState.isLoading) "Cargando..." else "Iniciar sesión")
         }
 
+        if (uiState.errorMessage != null) {
+            Text(
+                text = uiState.errorMessage ?: "",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
+
+        LaunchedEffect(uiState.successLogin) {
+            if (uiState.successLogin) {
+                navController.navigate(Screen.Register.route)
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = {
