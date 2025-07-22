@@ -58,11 +58,15 @@ class LoginViewModel @Inject constructor(
                 if (result.isSuccess) {
                     val user = result.getOrNull()
 
-                    // 🔐 Generar y guardar token simulado
+                    // 🔐 Simulamos guardar el token como si lo devolviera la API
                     val token = UUID.randomUUID().toString()
                     userPreferences.saveToken(token)
 
-                    _uiState.value = _uiState.value.copy(successLogin = true, isLoading = false)
+                    _uiState.value = _uiState.value.copy(
+                        successLogin = true,
+                        isLoading = false,
+                        errorMessage = null
+                    )
                 } else {
                     _uiState.value = _uiState.value.copy(
                         errorMessage = result.exceptionOrNull()?.message ?: "Error de autenticación",

@@ -2,15 +2,12 @@ package com.example.ecommerce_kotlin.ui.catalog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -26,13 +23,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.ecommerce_kotlin.domain.model.Product
+import com.example.ecommerce_kotlin.viewmodel.CartViewModel
 import com.example.ecommerce_kotlin.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
     navController: NavController,
-    viewModel: ProductViewModel = hiltViewModel()
+    viewModel: ProductViewModel = hiltViewModel(),
+    cartViewModel: CartViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     var query by remember { mutableStateOf("") }
@@ -43,6 +42,7 @@ fun CatalogScreen(
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(vertical = 16.dp)
+                .clip(MaterialTheme.shapes.medium)
         ) {
             Row(
                 modifier = Modifier
@@ -57,7 +57,7 @@ fun CatalogScreen(
                     placeholder = { Text("Buscar...", color = Color.White) },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(horizontal = 12.dp)
+                        .padding(end = 8.dp)
                         .background(Color.White, shape = MaterialTheme.shapes.medium),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
@@ -71,14 +71,14 @@ fun CatalogScreen(
                         Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
                     }
                 )
-                IconButton(onClick = { /* Carrito */ }) {
+                IconButton(onClick = { navController.navigate("carrito") }) {
                     Icon(
                         imageVector = Icons.Default.ShoppingCart,
                         contentDescription = "Carrito",
                         tint = Color.White
                     )
                 }
-                IconButton(onClick = { /* Perfil */ }) {
+                IconButton(onClick = { /* navController.navigate("perfil") */ }) {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
                         contentDescription = "Perfil",
@@ -97,9 +97,11 @@ fun CatalogScreen(
                 Text("Error: ${state.error}")
             }
         } else {
-            val filteredProducts = state.products.filter {
-                it.title.contains(query, ignoreCase = true)
-            }
+            val filteredProducts = if (query.length >= 3) {
+                state.products.filter {
+                    it.title.contains(query, ignoreCase = true)
+                }
+            } else state.products
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -109,7 +111,7 @@ fun CatalogScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(filteredProducts) { product ->
-                    ProductCard(product = product)
+                    ProductCard(product = product, cartViewModel = cartViewModel)
                 }
             }
         }
@@ -117,15 +119,14 @@ fun CatalogScreen(
 }
 
 @Composable
-fun ProductCard(product: Product) {
-    var quantity by remember { mutableStateOf(1) }
-
+fun ProductCard(product: Product, cartViewModel: CartViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp),
         shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Image(
@@ -133,7 +134,8 @@ fun ProductCard(product: Product) {
                 contentDescription = product.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.6f),
+                    .weight(0.6f)
+                    .clip(MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Crop
             )
 
@@ -157,32 +159,18 @@ fun ProductCard(product: Product) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                Button(
+                    onClick = { cartViewModel.addItem(product) },
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier
+                        .height(36.dp)
+                        .align(Alignment.End)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { if (quantity > 1) quantity-- }) {
-                            Icon(imageVector = Icons.Default.Remove, contentDescription = "Quitar")
-                        }
-                        Text(quantity.toString())
-                        IconButton(onClick = { quantity++ }) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar")
-                        }
-                    }
-                    Button(
-                        onClick = { /* TODO: agregar al carrito */ },
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                        modifier = Modifier.height(36.dp) // más compacto
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ShoppingCart,
-                            contentDescription = "Agregar al carrito",
-                            modifier = Modifier.size(20.dp) // más grande y visible
-                        )
-                    }
-
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = "Agregar al carrito",
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
         }
