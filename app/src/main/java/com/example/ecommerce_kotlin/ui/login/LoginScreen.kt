@@ -12,11 +12,12 @@ import androidx.navigation.NavController
 import com.example.ecommerce_kotlin.viewmodel.LoginViewModel
 import com.example.ecommerce_kotlin.ui.navigation.Screen
 import com.example.ecommerce_kotlin.viewmodel.LoginUiState
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LoginViewModel = viewModel()
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -76,7 +77,10 @@ fun LoginScreen(
 
         LaunchedEffect(uiState.successLogin) {
             if (uiState.successLogin) {
-                navController.navigate(Screen.Register.route)
+                navController.navigate(Screen.Catalog.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
+
             }
         }
 

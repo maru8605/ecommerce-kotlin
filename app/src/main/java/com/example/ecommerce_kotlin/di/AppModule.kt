@@ -2,7 +2,7 @@ package com.example.ecommerce_kotlin.di
 
 import com.example.ecommerce_kotlin.data.remote.ApiService
 import com.example.ecommerce_kotlin.data.remote.RetrofitInstance
-import com.example.ecommerce_kotlin.data.repository
+import com.example.ecommerce_kotlin.data.repository.AuthRepositoryImpl
 import com.example.ecommerce_kotlin.domain.repository.AuthRepository
 import dagger.Module
 import dagger.Provides
