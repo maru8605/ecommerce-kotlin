@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.ecommerce_kotlin.viewmodel.LoginViewModel
+import com.example.ecommerce_kotlin.ui.navigation.Screen
 import com.example.ecommerce_kotlin.viewmodel.LoginUiState
 
 @Composable
@@ -68,7 +69,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = {
-            // navController.navigate(Screen.Register.route)
+            navController.navigate(Screen.Register.route)
         }) {
             Text("¿No tenés cuenta? Registrate")
         }
