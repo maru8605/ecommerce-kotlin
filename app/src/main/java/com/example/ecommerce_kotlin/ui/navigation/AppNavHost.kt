@@ -6,6 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ecommerce_kotlin.ui.login.LoginScreen
+import com.example.ecommerce_kotlin.ui.register.RegisterScreen
+import com.example.ecommerce_kotlin.ui.catalog.CatalogScreen
 
 @Composable
 fun AppNavHost(
@@ -20,7 +22,12 @@ fun AppNavHost(
             LoginScreen(navController = navController)
         }
 
-        // Agregarás más pantallas acá luego
-        // composable(Screen.Register.route) { RegisterScreen(navController) }
+        composable(Screen.Register.route) {
+            RegisterScreen(navController = navController)
+        }
+
+        composable("catalogo") {
+            CatalogScreen(navController)
+        }
     }
 }
