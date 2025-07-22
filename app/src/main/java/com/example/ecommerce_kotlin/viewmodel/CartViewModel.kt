@@ -75,5 +75,12 @@ class CartViewModel @Inject constructor(
         val total = _cartItems.value.sumOf { it.product.price * it.quantity }
         _totalPrice.value = total
     }
+
+    fun clearCart() {
+        viewModelScope.launch {
+            cartRepository.clearCart()
+        }
+    }
+
 }
 

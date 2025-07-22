@@ -2,6 +2,7 @@ package com.example.ecommerce_kotlin.ui.catalog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -25,8 +26,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.ecommerce_kotlin.domain.model.Product
 import com.example.ecommerce_kotlin.viewmodel.CartViewModel
 import com.example.ecommerce_kotlin.viewmodel.ProductViewModel
-import androidx.compose.foundation.clickable
-
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,90 +38,118 @@ fun CatalogScreen(
     val state by viewModel.uiState.collectAsState()
     var query by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primary)
-                .padding(vertical = 16.dp)
-                .clip(MaterialTheme.shapes.medium)
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Row(
+            // Header
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(vertical = 16.dp)
+                    .clip(MaterialTheme.shapes.medium)
             ) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    placeholder = { Text("Buscar...", color = Color.White) },
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp)
-                        .background(Color.White, shape = MaterialTheme.shapes.medium),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.DarkGray,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedBorderColor = Color.Transparent,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    ),
-                    trailingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        placeholder = { Text("Buscar...", color = Color.White) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp)
+                            .background(Color.White, shape = MaterialTheme.shapes.medium),
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.DarkGray,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedBorderColor = Color.Transparent,
+                            cursorColor = MaterialTheme.colorScheme.primary
+                        ),
+                        trailingIcon = {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
+                        }
+                    )
+                    IconButton(onClick = { navController.navigate("carrito") }) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Carrito",
+                            tint = Color.White
+                        )
                     }
-                )
-                IconButton(onClick = { navController.navigate("carrito") }) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "Carrito",
-                        tint = Color.White
-                    )
-                }
-                IconButton(onClick = { /* navController.navigate("perfil") */ }) {
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = "Perfil",
-                        tint = Color.White
-                    )
+                    IconButton(onClick = { /* navController.navigate("perfil") */ }) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Perfil",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
-        }
 
-        if (state.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (state.error != null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Error: ${state.error}")
-            }
-        } else {
-            val filteredProducts = if (query.length >= 3) {
-                state.products.filter {
-                    it.title.contains(query, ignoreCase = true)
+            // Contenido
+            if (state.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
                 }
-            } else state.products
+            } else if (state.error != null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Error: ${state.error}")
+                }
+            } else {
+                val filteredProducts = if (query.length >= 3) {
+                    state.products.filter {
+                        it.title.contains(query, ignoreCase = true)
+                    }
+                } else state.products
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(filteredProducts) { product ->
-                    ProductCard(product = product, cartViewModel = cartViewModel, navController= navController)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(filteredProducts) { product ->
+                        ProductCard(
+                            product = product,
+                            cartViewModel = cartViewModel,
+                            navController = navController,
+                            onProductAdded = {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar("Producto agregado al carrito")
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+
 @Composable
-fun ProductCard(product: Product, cartViewModel: CartViewModel, navController: NavController) {
+fun ProductCard(
+    product: Product,
+    cartViewModel: CartViewModel,
+    navController: NavController,
+    onProductAdded: () -> Unit // 👈 este es el nuevo parámetro
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -160,7 +188,6 @@ fun ProductCard(product: Product, cartViewModel: CartViewModel, navController: N
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
-
                 Text(
                     text = "$${product.price}",
                     style = MaterialTheme.typography.titleLarge,
@@ -170,7 +197,10 @@ fun ProductCard(product: Product, cartViewModel: CartViewModel, navController: N
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { cartViewModel.addItem(product) },
+                    onClick = {
+                        cartViewModel.addItem(product)
+                        onProductAdded() // 👈 ejecutamos la lambda al hacer clic
+                    },
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                     modifier = Modifier
                         .height(36.dp)
@@ -186,3 +216,4 @@ fun ProductCard(product: Product, cartViewModel: CartViewModel, navController: N
         }
     }
 }
+

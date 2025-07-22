@@ -31,7 +31,7 @@ fun CartScreen(navController: NavController, viewModel: CartViewModel = hiltView
     val totalPrice by viewModel.totalPrice.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Header similar al del catálogo, con iconos de carrito y perfil
+        // Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,33 +55,48 @@ fun CartScreen(navController: NavController, viewModel: CartViewModel = hiltView
             }
         }
 
-        // Mostrar los productos del carrito
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(cartItems) { cartItem ->
-                CartItemCard(
-                    cartItem = cartItem,
-                    onAdd = { viewModel.addItem(cartItem.product) },
-                    onRemove = { viewModel.removeItem(cartItem.product) },
-                    onDelete = { viewModel.deleteItem(cartItem.product) }
-                )
-                Divider(color = Color.LightGray.copy(alpha = 0.5f))
+        if (cartItems.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No hay nada agregado a tu carrito.")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(cartItems) { cartItem ->
+                    CartItemCard(
+                        cartItem = cartItem,
+                        onAdd = { viewModel.addItem(cartItem.product) },
+                        onRemove = { viewModel.removeItem(cartItem.product) },
+                        onDelete = { viewModel.deleteItem(cartItem.product) }
+                    )
+                    Divider(color = Color.LightGray.copy(alpha = 0.5f))
+                }
             }
 
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+            // Total y botón de pedido
+            Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = "Total: $${"%.2f".format(totalPrice)}",
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(end = 12.dp)
+                    modifier = Modifier.align(Alignment.End)
                 )
+                Spacer(modifier = Modifier.height(12.dp))
+                Button(
+                    onClick = { navController.navigate("orderSummary") },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Hacer pedido")
+                }
             }
         }
     }
@@ -103,7 +118,6 @@ fun CartItemCard(
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            // Mostrar la imagen del producto
             Image(
                 painter = rememberAsyncImagePainter(cartItem.product.imageUrl),
                 contentDescription = null,
@@ -116,7 +130,6 @@ fun CartItemCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Mostrar el título y precio del producto
             Text(
                 text = cartItem.product.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -132,13 +145,11 @@ fun CartItemCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Controles para modificar la cantidad del producto y eliminarlo
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Controles para añadir y quitar productos
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onRemove) {
                         Icon(imageVector = Icons.Default.Remove, contentDescription = "Menos")
@@ -149,7 +160,6 @@ fun CartItemCard(
                     }
                 }
 
-                // Botón para eliminar el producto del carrito
                 IconButton(onClick = onDelete) {
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -160,4 +170,3 @@ fun CartItemCard(
         }
     }
 }
-
