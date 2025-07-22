@@ -40,5 +40,11 @@ fun AppNavHost(
             CartScreen(navController = navController)
         }
 
+        composable("producto/{productId}") { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailScreen(productId, navController)
+        }
+
+
     }
 }

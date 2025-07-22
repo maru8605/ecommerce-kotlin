@@ -25,6 +25,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.ecommerce_kotlin.domain.model.Product
 import com.example.ecommerce_kotlin.viewmodel.CartViewModel
 import com.example.ecommerce_kotlin.viewmodel.ProductViewModel
+import androidx.compose.foundation.clickable
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,7 +113,7 @@ fun CatalogScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(filteredProducts) { product ->
-                    ProductCard(product = product, cartViewModel = cartViewModel)
+                    ProductCard(product = product, cartViewModel = cartViewModel, navController= navController)
                 }
             }
         }
@@ -119,11 +121,14 @@ fun CatalogScreen(
 }
 
 @Composable
-fun ProductCard(product: Product, cartViewModel: CartViewModel) {
+fun ProductCard(product: Product, cartViewModel: CartViewModel, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp),
+            .height(300.dp)
+            .clickable {
+                navController.navigate("producto/${product.id}")
+            },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
