@@ -69,6 +69,7 @@ dependencies {
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation("com.squareup:javapoet:1.12.1")
+    implementation("androidx.compose.material:material-icons-extended")
 
 
 }

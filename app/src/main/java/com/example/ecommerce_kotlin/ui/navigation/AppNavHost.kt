@@ -26,8 +26,8 @@ fun AppNavHost(
             RegisterScreen(navController = navController)
         }
 
-        composable(Screen.Catalog.route) {
-            CatalogScreen()
+        composable("catalogo") {
+            CatalogScreen(navController)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.ecommerce_kotlin.data.repository
 
 import com.example.ecommerce_kotlin.data.remote.ApiService
 import com.example.ecommerce_kotlin.domain.model.LoginRequest
+import com.example.ecommerce_kotlin.domain.model.RegisterRequest
 import com.example.ecommerce_kotlin.domain.model.UserResponse
 import com.example.ecommerce_kotlin.domain.repository.AuthRepository
 
@@ -21,7 +22,7 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun register(request: LoginRequest): Result<UserResponse> {
+    override suspend fun register(request: RegisterRequest): Result<UserResponse> {
         return try {
             val response = apiService.register(request)
             Result.success(response)

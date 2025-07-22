@@ -1,13 +1,20 @@
 package com.example.ecommerce_kotlin.ui.catalog
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
-fun CatalogScreen() {
+fun CatalogScreen(navController: NavController) {
+    BackHandler {
+        navController.navigate("login") {
+            popUpTo("catalogo") { inclusive = true }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
