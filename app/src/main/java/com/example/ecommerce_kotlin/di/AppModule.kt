@@ -6,6 +6,9 @@ import com.example.ecommerce_kotlin.data.remote.ApiService
 import com.example.ecommerce_kotlin.data.remote.RetrofitInstance
 import com.example.ecommerce_kotlin.data.repository.AuthRepositoryImpl
 import com.example.ecommerce_kotlin.domain.repository.AuthRepository
+import com.example.ecommerce_kotlin.domain.repository.ProductRepository
+import com.example.ecommerce_kotlin.data.repository.ProductRepositoryImpl
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +34,9 @@ object AppModule {
     fun provideUserPreferences(@ApplicationContext context: Context): UserPreferences {
         return UserPreferences(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideProductRepository(apiService: ApiService): ProductRepository =
+        ProductRepositoryImpl(apiService)
 }

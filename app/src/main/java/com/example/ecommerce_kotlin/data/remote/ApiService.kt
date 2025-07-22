@@ -1,6 +1,7 @@
 package com.example.ecommerce_kotlin.data.remote
 
 import com.example.ecommerce_kotlin.domain.model.LoginRequest
+import com.example.ecommerce_kotlin.domain.model.Product
 import com.example.ecommerce_kotlin.domain.model.RegisterRequest
 import com.example.ecommerce_kotlin.domain.model.UserResponse
 import retrofit2.http.Body
@@ -21,4 +22,7 @@ interface ApiService {
     suspend fun register(
         @Body request: RegisterRequest
     ): UserResponse
+
+    @GET("products")
+    suspend fun getProducts(): List<Product>
 }
