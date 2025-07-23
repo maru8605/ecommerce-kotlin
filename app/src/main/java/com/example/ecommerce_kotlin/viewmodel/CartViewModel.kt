@@ -2,6 +2,7 @@ package com.example.ecommerce_kotlin.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ecommerce_kotlin.data.datastore.OrderPreferences
 import com.example.ecommerce_kotlin.data.mapper.toCartItem
 import com.example.ecommerce_kotlin.data.mapper.toEntity
 import com.example.ecommerce_kotlin.data.repository.CartRepository
@@ -14,10 +15,14 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
+import java.util.Date
+
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val orderPreferences: OrderPreferences
+
 ) : ViewModel() {
 
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
@@ -27,7 +32,7 @@ class CartViewModel @Inject constructor(
     val totalPrice: StateFlow<Double> = _totalPrice
 
     init {
-        // Observa el flujo de cartItems de la base de datos
+
         viewModelScope.launch {
             cartRepository.getCartItems().collect { cartItemEntities ->
                 _cartItems.value = cartItemEntities.map { it.toCartItem() }
@@ -93,10 +98,10 @@ class CartViewModel @Inject constructor(
             val cartItemsValue = cartItems.value
             val totalValue = totalPrice.value
 
-            // Convertir CartItem -> Order.Item
+
             val orderItems = cartItemsValue.map {
                 Order.Item(
-                    title = it.title,
+                    title = it.product.title,
                     quantity = it.quantity
                 )
             }
@@ -109,10 +114,10 @@ class CartViewModel @Inject constructor(
                 items = orderItems
             )
 
-            // Guardar orden
+
             orderPreferences.saveOrder(order)
 
-            // Limpiar el carrito si querés
+
             clearCart()
         }
     }

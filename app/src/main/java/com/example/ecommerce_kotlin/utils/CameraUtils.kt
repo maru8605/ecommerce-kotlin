@@ -26,7 +26,7 @@ fun handleCameraPermission(
 ) {
     when {
         ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
-            // Ya tiene permiso, no hacer nada acá
+
         }
         else -> {
             permissionLauncher.launch(Manifest.permission.CAMERA)

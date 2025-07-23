@@ -11,7 +11,7 @@ class OrderViewModel @Inject constructor() : ViewModel() {
     val orders: StateFlow<List<Order>> = _orders
 
     init {
-        // Simulación temporal de órdenes cargadas
+
         _orders.value = listOf(
             Order("2025-07-22", 250.0, listOf(
                 Order.Item("Zapatillas", 1),

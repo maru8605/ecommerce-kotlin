@@ -59,7 +59,7 @@ class LoginViewModel @Inject constructor(
                 if (result.isSuccess) {
                     val userResponse = result.getOrNull()
 
-                    // 🔐 Simulamos guardar token
+
                     val token = UUID.randomUUID().toString()
                     userPreferences.saveToken(token)
 

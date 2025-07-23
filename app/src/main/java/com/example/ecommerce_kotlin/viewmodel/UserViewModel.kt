@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val userPreferences: UserPreferences,
-    private val userRepository: UserRepository // nuevo
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _user = MutableStateFlow<User?>(null)
