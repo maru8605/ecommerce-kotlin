@@ -91,13 +91,49 @@ fun CatalogScreen(
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { /* navController.navigate("perfil") */ }) {
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Perfil",
-                            tint = Color.White
-                        )
+                    var expanded by remember { mutableStateOf(false) }
+
+                    Box {
+                        IconButton(onClick = { expanded = true }) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "Menú perfil",
+                                tint = Color.White
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Ir al perfil") },
+                                onClick = {
+                                    expanded = false
+
+                                    coroutineScope.launch {
+                                        kotlinx.coroutines.delay(100)
+                                        navController.navigate("perfil")
+                                    }
+                                }
+                            )
+
+                            DropdownMenuItem(
+                                text = { Text("Cerrar sesión") },
+                                onClick = {
+                                    expanded = false
+                                    coroutineScope.launch {
+                                        kotlinx.coroutines.delay(100)
+                                        navController.navigate("login") {
+                                            popUpTo("catalogo") { inclusive = true }
+                                        }
+                                    }
+                                }
+                            )
+
+                        }
                     }
+
                 }
             }
 

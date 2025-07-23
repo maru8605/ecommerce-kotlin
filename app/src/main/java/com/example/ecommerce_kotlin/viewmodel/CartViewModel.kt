@@ -7,9 +7,12 @@ import com.example.ecommerce_kotlin.data.mapper.toEntity
 import com.example.ecommerce_kotlin.data.repository.CartRepository
 import com.example.ecommerce_kotlin.domain.model.CartItem
 import com.example.ecommerce_kotlin.domain.model.Product
+import  com.example.ecommerce_kotlin.domain.model.Order
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -81,6 +84,40 @@ class CartViewModel @Inject constructor(
             cartRepository.clearCart()
         }
     }
+
+    private val _orders = MutableStateFlow<List<Order>>(emptyList())
+    val orders: StateFlow<List<Order>> = _orders
+
+    fun confirmOrder() {
+        viewModelScope.launch {
+            val cartItemsValue = cartItems.value
+            val totalValue = totalPrice.value
+
+            // Convertir CartItem -> Order.Item
+            val orderItems = cartItemsValue.map {
+                Order.Item(
+                    title = it.title,
+                    quantity = it.quantity
+                )
+            }
+
+            val currentDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+
+            val order = Order(
+                date = currentDate,
+                total = totalValue,
+                items = orderItems
+            )
+
+            // Guardar orden
+            orderPreferences.saveOrder(order)
+
+            // Limpiar el carrito si querés
+            clearCart()
+        }
+    }
+
+
 
 }
 

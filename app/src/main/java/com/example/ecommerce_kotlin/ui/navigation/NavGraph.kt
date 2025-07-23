@@ -12,6 +12,6 @@ fun AppNavGraph(navController: NavHostController) {
         composable(route = Screen.Login.route) {
             LoginScreen(navController)
         }
-        // Agregaremos las demás rutas luego
+
     }
 }

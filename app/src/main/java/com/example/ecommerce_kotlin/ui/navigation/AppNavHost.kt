@@ -15,6 +15,8 @@ import com.example.ecommerce_kotlin.ui.orders.OrderSummaryScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.ecommerce_kotlin.viewmodel.CartViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ecommerce_kotlin.ui.orders.OrderListScreen
+import com.example.ecommerce_kotlin.ui.profile.ProfileScreen
 
 
 @Composable
@@ -67,5 +69,19 @@ fun AppNavHost(
                 }
             )
         }
+
+        composable("perfil") {
+            ProfileScreen(
+                onShowOrders = {
+                    navController.navigate("ordenes")
+                }
+            )
+        }
+
+        composable("ordenes") {
+            OrderListScreen()
+        }
+
+
     }
 }

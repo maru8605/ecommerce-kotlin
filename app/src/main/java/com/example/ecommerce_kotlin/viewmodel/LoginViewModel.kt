@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ecommerce_kotlin.domain.repository.AuthRepository
 import com.example.ecommerce_kotlin.data.datastore.UserPreferences
+import com.example.ecommerce_kotlin.domain.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,11 +57,24 @@ class LoginViewModel @Inject constructor(
             try {
                 val result = repository.login(email, password)
                 if (result.isSuccess) {
-                    val user = result.getOrNull()
+                    val userResponse = result.getOrNull()
 
-                    // 🔐 Simulamos guardar el token como si lo devolviera la API
+                    // 🔐 Simulamos guardar token
                     val token = UUID.randomUUID().toString()
                     userPreferences.saveToken(token)
+
+
+                    userResponse?.let {
+                        val user = User(
+                            id = it.id,
+                            name = it.name,
+                            email = it.email,
+                            password = "",
+                            avatar = "",
+                            createdAt = "it.createdAt"
+                        )
+                        userPreferences.saveUser(user)
+                    }
 
                     _uiState.value = _uiState.value.copy(
                         successLogin = true,
@@ -81,5 +95,4 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-
 }
