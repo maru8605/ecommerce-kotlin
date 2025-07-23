@@ -2,18 +2,18 @@ package com.example.ecommerce_kotlin.ui.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.ecommerce_kotlin.ui.navigation.Screen
 import com.example.ecommerce_kotlin.viewmodel.LoginViewModel
 
 @Composable
@@ -21,8 +21,16 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    var passwordVisible by remember { mutableStateOf(false) }
+    val state by viewModel.uiState.collectAsState()
+
+    // ✅ Manejo correcto de navegación sin ANR
+    LaunchedEffect(state.successLogin) {
+        if (state.successLogin) {
+            navController.navigate("catalog") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -36,67 +44,62 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
-            value = uiState.email,
-            onValueChange = viewModel::onEmailChanged,
+            value = state.email,
+            onValueChange = { viewModel.onEmailChanged(it) },
             label = { Text("Email") },
-            isError = uiState.emailError,
+            placeholder = { Text("usuario@email.com") },
+            leadingIcon = { Icon(Icons.Default.MailOutline, contentDescription = "Email") },
+            isError = state.emailError,
+            singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-        if (uiState.emailError) {
-            Text("El email es obligatorio", color = MaterialTheme.colorScheme.error)
+
+        if (state.emailError) {
+            Text("El email es obligatorio", color = Color.Red, style = MaterialTheme.typography.bodySmall)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = uiState.password,
-            onValueChange = viewModel::onPasswordChanged,
+            value = state.password,
+            onValueChange = { viewModel.onPasswordChanged(it) },
             label = { Text("Contraseña") },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val icon = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility
-                val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = icon, contentDescription = description)
-                }
-            },
-            isError = uiState.passwordError,
+            placeholder = { Text("********") },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            isError = state.passwordError,
+            singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-        if (uiState.passwordError) {
-            Text("La contraseña es obligatoria", color = MaterialTheme.colorScheme.error)
+
+        if (state.passwordError) {
+            Text("La contraseña es obligatoria", color = Color.Red, style = MaterialTheme.typography.bodySmall)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
-            onClick = viewModel::onLoginClicked,
-            enabled = !uiState.isLoading,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(if (uiState.isLoading) "Cargando..." else "Iniciar sesión")
-        }
-
-        if (uiState.errorMessage != null) {
-            Text(
-                text = uiState.errorMessage ?: "",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-        }
-
-        LaunchedEffect(uiState.successLogin) {
-            if (uiState.successLogin) {
-                navController.navigate(Screen.Catalog.route) {
-                    popUpTo(Screen.Login.route) { inclusive = true }
-                }
+        if (state.isLoading) {
+            CircularProgressIndicator()
+        } else {
+            Button(
+                onClick = { viewModel.onLoginClicked() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Ingresar")
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        state.errorMessage?.let {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = it, color = Color.Red)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         TextButton(onClick = {
-            navController.navigate(Screen.Register.route)
+            navController.navigate("registro") {
+                popUpTo("login") { inclusive = false }
+            }
         }) {
             Text("¿No tenés cuenta? Registrate")
         }
