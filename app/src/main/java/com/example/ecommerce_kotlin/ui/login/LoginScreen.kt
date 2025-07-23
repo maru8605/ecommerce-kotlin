@@ -23,7 +23,7 @@ fun LoginScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    // ✅ Manejo correcto de navegación sin ANR
+
     LaunchedEffect(state.successLogin) {
         if (state.successLogin) {
             navController.navigate("catalog") {

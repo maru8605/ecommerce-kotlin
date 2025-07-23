@@ -184,7 +184,7 @@ fun ProductCard(
     product: Product,
     cartViewModel: CartViewModel,
     navController: NavController,
-    onProductAdded: () -> Unit // 👈 este es el nuevo parámetro
+    onProductAdded: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -235,7 +235,7 @@ fun ProductCard(
                 Button(
                     onClick = {
                         cartViewModel.addItem(product)
-                        onProductAdded() // 👈 ejecutamos la lambda al hacer clic
+                        onProductAdded() //
                     },
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                     modifier = Modifier

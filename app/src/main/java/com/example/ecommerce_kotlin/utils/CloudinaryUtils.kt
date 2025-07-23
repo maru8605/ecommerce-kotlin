@@ -11,8 +11,8 @@ fun uploadImageToCloudinary(
     onSuccess: (String) -> Unit,
     onError: (Exception) -> Unit
 ) {
-    val cloudName = "dp0jpmsws" // tu cloud name
-    val preset = "ml_default"   // si creaste uno personalizado, reemplaza este
+    val cloudName = "dp0jpmsws"
+    val preset = "ml_default"
 
     val url = "https://api.cloudinary.com/v1_1/$cloudName/image/upload"
     val requestBody = MultipartBody.Builder()

@@ -31,7 +31,7 @@ interface ApiService {
     @PATCH("users/{id}")
     suspend fun updateUserAvatar(
         @Path("id") userId: String,
-        @Body body: Map<String, String> // Solo el campo avatar
+        @Body body: Map<String, String>
     ): Response<Unit>
 
 }

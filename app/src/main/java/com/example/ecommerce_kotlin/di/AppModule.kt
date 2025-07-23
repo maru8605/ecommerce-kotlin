@@ -1,8 +1,7 @@
 package com.example.ecommerce_kotlin.di
 
 import android.app.Application
-import androidx.room.Room
-import com.example.ecommerce_kotlin.data.local.CartDatabase
+import com.example.ecommerce_kotlin.data.datastore.OrderPreferences
 import com.example.ecommerce_kotlin.data.local.dao.CartDao
 import com.example.ecommerce_kotlin.data.repository.CartRepository
 import dagger.Module
@@ -21,6 +20,9 @@ object AppModule {
         return CartRepository(cartDao)
     }
 
-
+    @Provides
+    @Singleton
+    fun provideOrderPreferences(app: Application): OrderPreferences {
+        return OrderPreferences(app)
+    }
 }
-

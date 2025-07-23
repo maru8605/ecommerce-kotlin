@@ -50,7 +50,7 @@ class RegisterViewModel @Inject constructor(
     fun registerUser() {
         val state = _uiState.value
 
-        // Validaciones
+
         if (state.nombreCompleto.isBlank()) {
             _uiState.value = state.copy(nombreError = "El nombre completo es obligatorio")
             return
